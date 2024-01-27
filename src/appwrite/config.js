@@ -56,9 +56,8 @@ export class Service {
         }
 
     }
-    async deletePost(slug)
-    {
-        try{
+    async deletePost(slug) {
+        try {
             await this.databases.deleteDocument(
                 conf.appWriteDatabaseId,
                 conf.appWirteCollectionId,
@@ -66,10 +65,36 @@ export class Service {
             )
             return true;
         }
-        catch(error)
-        {
+        catch (error) {
             console.log("Appwrite::deletePost::error", error);
+            return false;
         }
+    }
+    async getPost(slug) {
+        try {
+            return await this.databases.getDocument(
+                conf.appWriteDatabaseId,
+                conf.appWirteCollectionId,
+                slug
+            )
+        }
+        catch (error) {
+            console.log("Appwrite::getPost::error", error);
+        }
+
+    }
+    async getPosts(queries = [Query.equal("status", "active")]) {
+        try {
+            return await this.databases.listDocuments(
+                conf.appWriteDatabaseId,
+                conf.appWirteCollectionId,
+                queries,
+            )
+        }
+        catch (error) {
+            console.log("Appwrite::getPosts::error", error);
+        }
+
     }
 
 }
