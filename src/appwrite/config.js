@@ -80,6 +80,7 @@ export class Service {
         }
         catch (error) {
             console.log("Appwrite::getPost::error", error);
+            return false;
         }
 
     }
@@ -93,8 +94,46 @@ export class Service {
         }
         catch (error) {
             console.log("Appwrite::getPosts::error", error);
+            return false;
         }
 
+    }
+    //file upload service
+
+    async uploadFile(file) {
+        try {
+            return await this.bucket.createFile(
+                conf.appWriteBucketId,
+                ID.unique(),
+                file
+            )
+        }
+        catch (error) {
+            console.log("Appwrite::uploadFile::error", error);
+            return false;
+        }
+    }
+    async deleteFile(fileId) {
+        try {
+            await this.bucket.deleteFile(
+                conf.appWriteBucketId,
+                fileId
+            )
+            return true;
+
+        }
+        catch (error) {
+            console.log("Appwrite::deleteFile::error", error);
+            return false;
+        }
+    }
+    //preview file option also
+
+    getFilePreview() {
+        return this.bucket.getFilePreview(
+            conf.appWriteBucketId,
+            fileId
+        )
     }
 
 }
