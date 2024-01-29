@@ -1,12 +1,10 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState, useEffect } from 'react'
 import conf from './conf/conf'
+import { useDispatch } from 'react-redux';
 
 function App() {
-  const [count, setCount] = useState(0)
-  console.log(conf.appWriteURL);
+  const [loading, setLoading] = useState(true);
+  const dispatch=useDispatch();
 
   return (
     <h1>app in appwrite</h1>
