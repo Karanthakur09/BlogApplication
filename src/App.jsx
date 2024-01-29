@@ -1,14 +1,39 @@
 import React, { useState, useEffect } from 'react'
-import conf from './conf/conf'
+import authService from "./appwrite/auth"
 import { useDispatch } from 'react-redux';
-
+import { login, logout } from "./store/authSlice";
+import {Header,Footer} from "./components/index";
+import { Outlet } from 'react-router-dom';
 function App() {
   const [loading, setLoading] = useState(true);
-  const dispatch=useDispatch();
+  const dispatch = useDispatch();
 
-  return (
-    <h1>app in appwrite</h1>
-  )
+  useEffect(() => {
+    authService.getCurrentUser()
+      .then((userData) => {
+        if (userData) {
+          dispatch(login({ userData }))
+        }
+        else {
+          dispatch(logout());
+        }
+      })
+      .finally(() => setLoading(false))
+
+  }, [])
+
+  //now we will use conditional rendering
+  return !loading ? (
+    <div className="min-h-screen flex flex-wrap bg-gray-400 content-between">
+      <div className="w-full block">
+        <Header/>
+        <main>
+          TODO:<Outlet/>
+        </main>
+        <Footer/>
+      </div>
+    </div>
+  ): null
 }
 
 export default App
