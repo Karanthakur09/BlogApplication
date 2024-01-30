@@ -25,7 +25,7 @@ function App() {
   //now we will use conditional rendering
   return !loading ? (
     <div className="min-h-screen flex flex-wrap bg-gray-400 content-between">
-      <div className="w-full block">
+      <div className="w-fit block">
         <Header/>
         <main>
           TODO:<Outlet/>
