@@ -11,6 +11,7 @@ import AuthLayout from "./AuthLayout";
 import RTE from "./RTE";
 import PostForm from "./post-form/PostForm";
 import PostCard from "./PostCard";
+
 export {
     Header,
     Footer,
