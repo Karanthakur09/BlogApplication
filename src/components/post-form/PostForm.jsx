@@ -5,47 +5,47 @@ import appwriteService from "../../appwrite/config";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-function PostForm({ post }) {
-    const { register, handleSubmit, watch, setValue, control, getValues } = useForm(  //watch is used to monitor a filed continously
-        {
-            defaultValues: {
-                title: post?.title || '',
-                slug: psot?.slug || '',
-                content: post?.content || '',
-                status: post?.status || 'active'
-            }
-        }
-    );
+export default function PostForm({ post }) {
+    const { register, handleSubmit, watch, setValue, control, getValues } = useForm({
+        defaultValues: {
+            title: post?.title || "",
+            slug: post?.$id || "",
+            content: post?.content || "",
+            status: post?.status || "active",
+        },
+    });
+
     const navigate = useNavigate();
-    const userData = useSelector(state => state.user.userData);
+    const userData = useSelector((state) => state.auth.userData);
 
     const submit = async (data) => {
         if (post) {
-            const file = data.image[0] ? appwriteService.uploadFile(data.image[0]) : null;
+            const file = data.image[0] ? await appwriteService.uploadFile(data.image[0]) : null;
+
             if (file) {
-                //delete the previous image
-                await appwriteService.deleteFile(post.featuredImage);
+                appwriteService.deleteFile(post.featuredImage);
             }
+
             const dbPost = await appwriteService.updatePost(post.$id, {
                 ...data,
-                featuredImage: file ? file.$id : undefined
-            })
+                featuredImage: file ? file.$id : undefined,
+            });
 
             if (dbPost) {
-                navigate(`/post/${dbPost.$id}`)
+                navigate(`/post/${dbPost.$id}`);
             }
         } else {
             const file = await appwriteService.uploadFile(data.image[0]);
+
             if (file) {
                 const fileId = file.$id;
                 data.featuredImage = fileId;
                 const dbPost = await appwriteService.createPost({ ...data, userId: userData.$id });
 
                 if (dbPost) {
-                    navigate(`post/${dbPost.$id}`);
+                    navigate(`/post/${dbPost.$id}`);
                 }
             }
-
         }
     };
 
@@ -53,7 +53,7 @@ function PostForm({ post }) {
         if (value && typeof value === "string")
             return value
                 .trim()
-                .toLocaleLowerCase()
+                .toLowerCase()
                 .replace(/[^a-zA-Z\d\s]+/g, "-")
                 .replace(/\s/g, "-");
 
@@ -61,18 +61,14 @@ function PostForm({ post }) {
     }, []);
 
     React.useEffect(() => {
-
         const subscription = watch((value, { name }) => {
-            if (name == "title") {
-                setValue('slug', slugTransform(value.title,
-                    { shouldValidate: true }))
-            }
-            return () => {
-                subscription.unsubscribe();
+            if (name === "title") {
+                setValue("slug", slugTransform(value.title), { shouldValidate: true });
             }
         });
 
-    }, [watch, slugTransform, setValue])
+        return () => subscription.unsubscribe();
+    }, [watch, slugTransform, setValue]);
 
     return (
         <form onSubmit={handleSubmit(submit)} className="flex flex-wrap">
@@ -116,14 +112,12 @@ function PostForm({ post }) {
                     label="Status"
                     className="mb-4"
                     {...register("status", { required: true })}
+                    o
                 />
                 <Button type="submit" bgColor={post ? "bg-green-500" : undefined} className="w-full">
                     {post ? "Update" : "Submit"}
                 </Button>
             </div>
         </form>
-    )
-
-
-};
-export default PostForm;
+    );
+}
